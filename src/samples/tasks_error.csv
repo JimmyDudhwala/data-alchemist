@@ -1,0 +1,61 @@
+TaskID,TaskName,Category,Duration,RequiredSkills,PreferredPhases,MaxConcurrent
+T001,Task T001,Development,0,project,1-4,5
+T002,Task T002,Management,1,"ml,sql",bad_data,4
+T003,Task T003,Development,4,brainfuck,"[3, 4, 2, 5]",1
+T004,Task T004,Management,1,python,"[3, 2, 1]",5
+T005,Task T005,Design,1,"design,excel,project","[5, 4]",2
+T006,Task T006,Design,1,"sql,python","[5, 1]",4
+T007,Task T007,Design,2,"java,project,ml",1-4,3
+T008,Task T008,Management,2,ml,"[1, 3, 5, 2]",3
+T009,Task T009,Design,4,"project,design,ml",1-5,2
+T010,Task T010,Design,4,"ml,java,sql",2-5,3
+T011,Task T011,Development,2,"python,design",[4],5
+T012,Task T012,Design,4,ml,"[1, 5]",2
+T013,Task T013,Development,3,"project,java,design","[3, 4, 2]",1
+T014,Task T014,Design,3,sql,1-5,5
+T015,Task T015,Management,3,sql,4-4,4
+T016,Task T016,Management,4,sql,2-4,4
+T017,Task T017,Development,1,"python,design,sql",2-5,3
+T018,Task T018,Design,3,"excel,ml",3-3,3
+T019,Task T019,Design,2,"python,project,ml","[2, 5, 4, 3]",5
+T020,Task T020,Design,1,"ml,project,sql",2-2,1
+T021,Task T021,Design,4,"design,ml,python","[3, 1, 2, 4]",4
+T022,Task T022,Design,3,"sql,project","[5, 3, 2]",4
+T023,Task T023,Design,1,"project,ml,sql",2-4,1
+T024,Task T024,Management,2,"sql,ml,java",2-5,4
+T025,Task T025,Management,2,"project,sql,python","[3, 1, 2]",3
+T026,Task T026,Design,3,"ml,sql,java",1-5,5
+T027,Task T027,Design,2,"project,ml,sql","[1, 5, 3]",5
+T028,Task T028,Management,2,"ml,excel","[5, 2]",2
+T029,Task T029,Development,1,"design,java,sql","[1, 3, 5, 4]",2
+T030,Task T030,Management,1,sql,[1],2
+T031,Task T031,Management,2,"design,ml",2-5,4
+T032,Task T032,Management,1,"excel,design",2-5,3
+T033,Task T033,Development,4,"excel,design","[1, 4, 2, 5]",4
+T034,Task T034,Management,4,"project,excel,java",2-2,1
+T035,Task T035,Design,2,"design,excel",1-5,1
+T036,Task T036,Development,1,"java,design",1-5,5
+T037,Task T037,Management,1,"java,ml,design",3-5,1
+T038,Task T038,Development,3,"sql,design","[1, 3, 5, 4]",5
+T039,Task T039,Design,3,project,3-5,5
+T040,Task T040,Development,2,"ml,excel","[1, 4, 3, 2]",2
+T041,Task T041,Design,4,"sql,ml",1-3,4
+T042,Task T042,Development,3,excel,4-4,4
+T043,Task T043,Development,2,sql,1-3,3
+T044,Task T044,Design,2,"design,ml",1-2,4
+T045,Task T045,Development,3,"project,ml",[4],5
+T046,Task T046,Development,2,excel,"[5, 2]",4
+T047,Task T047,Management,3,"java,excel",[3],4
+T048,Task T048,Development,4,"sql,excel,ml","[3, 4, 2, 5]",5
+T049,Task T049,Development,2,sql,"[2, 5, 3, 1]",4
+T050,Task T050,Management,2,design,2-3,2
+T051,Task T051,Management,4,"project,ml,excel",1-5,5
+T052,Task T052,Design,1,"sql,project,ml","[3, 4, 5]",5
+T053,Task T053,Management,1,"python,design",[1],4
+T054,Task T054,Management,1,"project,excel,java",2-5,3
+T055,Task T055,Design,1,python,"[3, 5, 1, 4]",1
+T056,Task T056,Development,1,"ml,python",1-3,4
+T057,Task T057,Development,1,python,1-3,3
+T058,Task T058,Design,2,"python,ml,excel",1-5,4
+T059,Task T059,Development,1,python,"[2, 3, 1]",5
+T060,Task T060,Management,4,"java,python","[4, 1, 5]",3
