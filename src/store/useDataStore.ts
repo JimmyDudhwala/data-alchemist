@@ -9,13 +9,42 @@ export type ValidationError = {
   message: string;
 };
 
+// Define proper types for your data
+export type DataRow = Record<string, string | number>;
+export type ClientData = {
+  ClientID: string;
+  RequestedTaskIDs: string;
+  PriorityLevel: string | number;
+  AttributesJSON: string;
+  [key: string]: string | number;
+};
+
+export type TaskData = {
+  TaskID: string;
+  Duration: string | number;
+  PreferredPhases: string;
+  RequiredSkills: string;
+  MaxConcurrent: string | number;
+  AttributesJSON: string;
+  [key: string]: string | number;
+};
+
+export type WorkerData = {
+  WorkerID: string;
+  Skills: string;
+  AvailableSlots: string;
+  MaxLoadPerPhase: string | number;
+  [key: string]: string | number;
+};
+
+
 type DataState = {
-  clients: any[];
-  tasks: any[];
-  workers: any[];
-  setClients: (data: any[]) => void;
-  setTasks: (data: any[]) => void;
-  setWorkers: (data: any[]) => void;
+  clients: ClientData[];
+  tasks: TaskData[];
+  workers: WorkerData[];
+  setClients: (data: ClientData[]) => void;
+  setTasks: (data: TaskData[]) => void;
+  setWorkers: (data: WorkerData[]) => void;
 
   // error handling
   clientsErrors: ValidationError[];
@@ -34,19 +63,19 @@ export const useDataStore = create<DataState>()(
       clients: [],
       tasks: [],
       workers: [],
-      setClients: (data) => set({ clients: data }),
-      setTasks: (data) => set({ tasks: data }),
-      setWorkers: (data) => set({ workers: data }),
+      setClients: (data: ClientData[]) => set({ clients: data }),
+      setTasks: (data: TaskData[]) => set({ tasks: data }),
+      setWorkers: (data: WorkerData[]) => set({ workers: data }),
 
       clientsErrors: [],
-      setClientErrors: (errors) => set({ clientsErrors: errors }),
+      setClientErrors: (errors: ValidationError[]) => set({ clientsErrors: errors }),
       tasksErrors: [],
-      setTaskErrors: (errors) => set({ tasksErrors: errors }),
+      setTaskErrors: (errors: ValidationError[]) => set({ tasksErrors: errors }),
       workersErrors: [],
-      setWorkErrors: (errors) => set({ workersErrors: errors }),
+      setWorkErrors: (errors: ValidationError[]) => set({ workersErrors: errors }),
 
       crossFileErrors: [],
-      setCrossFileErrors: (errors) => set({ crossFileErrors: errors }),
+      setCrossFileErrors: (errors: ValidationError[]) => set({ crossFileErrors: errors }),
     }),
     {
       name: "csv-data-store", // ⚠️ unique localStorage key

@@ -30,7 +30,7 @@ export type PatternMatchRule = {
   type: "patternMatch";
   regex: string;
   ruleTemplate: string;
-  params: Record<string, any>;
+  params: Record<string, unknown>;
 };
 
 export type PrecedenceOverrideRule = {
@@ -41,7 +41,7 @@ export type PrecedenceOverrideRule = {
 export type TaskPriority = {
   type: "TaskPriority";
   priorityList: string[]; // ordered list of rule types or taskIDs
-}
+};
 
 // Union type
 export type Rule =
@@ -51,7 +51,7 @@ export type Rule =
   | PhaseWindowRule
   | PatternMatchRule
   | PrecedenceOverrideRule
-  | TaskPriority
+  | TaskPriority;
 
 type RuleStore = {
   rules: Rule[];

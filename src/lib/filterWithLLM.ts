@@ -1,3 +1,5 @@
+import { ClientData, TaskData, WorkerData } from "@/store/useDataStore";
+
 export async function generateFilterFunction({
     query,
     tableType,
@@ -5,8 +7,8 @@ export async function generateFilterFunction({
   }: {
     query: string;
     tableType: "clients" | "tasks" | "workers";
-    sampleRow: any;
-  }): Promise<(row: any) => boolean> {
+    sampleRow: ClientData | TaskData | WorkerData;
+  }): Promise<(row: unknown) => boolean> {
     const res = await fetch("/api/filter", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

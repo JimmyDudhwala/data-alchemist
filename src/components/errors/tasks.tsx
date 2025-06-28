@@ -1,7 +1,7 @@
-import { ValidationError } from "@/store/useDataStore";
+import { TaskData, ValidationError } from "@/store/useDataStore";
 
 
-export function validateTaskRow(row: any, rowIdx: number, seenTaskIDs: Set<string>): ValidationError[] {
+export function validateTaskRow(row: TaskData, rowIdx: number, seenTaskIDs: Set<string>): ValidationError[] {
   const errors: ValidationError[] = [];
 
   // a. Duration ≥ 1

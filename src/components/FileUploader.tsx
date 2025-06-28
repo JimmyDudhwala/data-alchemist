@@ -1,10 +1,10 @@
-// components/FileUploader.tsx
 "use client";
 
 import { parseCSV } from "@/lib/parser";
+import { ClientData, TaskData, WorkerData } from "@/store/useDataStore";
 
 interface FileUploaderProps {
-  onDataParsed: (data: any[], name: string) => void;
+  onDataParsed: (data: ClientData[] | TaskData[] | WorkerData[], name: string) => void;
 }
 
 export default function FileUploader({ onDataParsed }: FileUploaderProps) {
@@ -19,7 +19,7 @@ export default function FileUploader({ onDataParsed }: FileUploaderProps) {
       ? "tasks"
       : "workers";
 
-    onDataParsed(data, name);
+    onDataParsed(data as ClientData[] | TaskData[] | WorkerData[], name);
   };
 
   return (

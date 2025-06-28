@@ -1,10 +1,10 @@
 // lib/validator.ts
 
-import { ValidationError } from "@/store/useDataStore";
+import { ClientData, ValidationError } from "@/store/useDataStore";
 
   
   // Example validation function
-  export function validateClients(clients: any[], taskIds: string[]): ValidationError[] {
+  export function validateClients(clients: ClientData[], taskIds: string[]): ValidationError[] {
     const errors: ValidationError[] = [];
   
     clients.forEach((client, idx) => {

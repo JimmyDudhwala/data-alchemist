@@ -1,7 +1,6 @@
 "use client";
 
 import { useRuleStore } from "@/store/useRuleStore";
-import { useDataStore } from "@/store/useDataStore";
 import { useState } from "react";
 
 const ruleTypes = [

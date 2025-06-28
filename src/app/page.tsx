@@ -5,8 +5,10 @@ import DataTable from "@/components/DataGrid";
 import ExportButton from "@/components/ExportButton";
 import FileUploader from "@/components/FileUploader";
 import LLMSearchBar from "@/components/LLMSearchBar";
-import { useDataStore } from "@/store/useDataStore";
+import { ClientData, TaskData, useDataStore, WorkerData } from "@/store/useDataStore";
 import { validateCrossFile } from "@/components/errors/crossValidators";
+
+// Define proper types for your data
 
 export default function Home() {
   const clients = useDataStore((state) => state.clients);
@@ -18,9 +20,9 @@ export default function Home() {
   const setCrossFileErrors = useDataStore((s) => s.setCrossFileErrors);
   const crossFileErrors = useDataStore((s) => s.crossFileErrors);
 
-  const [filteredClients, setFilteredClients] = useState(clients);
-  const [filteredTasks, setFilteredTasks] = useState(tasks);
-  const [filteredWorkers, setFilteredWorkers] = useState(workers);
+  const [filteredClients, setFilteredClients] = useState<ClientData[]>(clients);
+  const [filteredTasks, setFilteredTasks] = useState<TaskData[]>(tasks);
+  const [filteredWorkers, setFilteredWorkers] = useState<WorkerData[]>(workers);
 
   useEffect(() => {
     if (clients.length && tasks.length && workers.length) {
@@ -31,16 +33,12 @@ export default function Home() {
     setFilteredClients(clients);
     setFilteredTasks(tasks);
     setFilteredWorkers(workers);
-  }, [clients, tasks, workers]); // ✅ fixed dependencies
+  }, [clients, tasks, workers, setCrossFileErrors]); // ✅ Fixed dependencies
 
-  console.log(filteredClients)
-  console.log(tasks)
-
-
-  const handleParsed = (data: any[], name: string) => {
-    if (name === "clients") setClients(data);
-    else if (name === "tasks") setTasks(data);
-    else if (name === "workers") setWorkers(data);
+  const handleParsed = (data: ClientData[] | TaskData[] | WorkerData[], name: string) => {
+    if (name === "clients") setClients(data as ClientData[]);
+    else if (name === "tasks") setTasks(data as TaskData[]);
+    else if (name === "workers") setWorkers(data as WorkerData[]);
   };
 
   return (

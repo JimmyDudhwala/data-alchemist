@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -8,19 +8,25 @@ import {
   TableRow
 } from "@/components/ui/table";
 
-import { useDataStore, ValidationError } from "@/store/useDataStore";
+import { ClientData, DataRow, TaskData, useDataStore, ValidationError, WorkerData } from "@/store/useDataStore";
 import { validateClientRow } from "./errors/client";
 import { validateTaskRow } from "./errors/tasks";
 import { validateWorkerRow } from "./errors/workers";
 
-interface DataTableProps {
-  data: any[];
+// Define proper types for your data
+
+interface DataTableProps<T extends DataRow & Record<string, unknown>> {
+  data: T[];
   tableType: "clients" | "tasks" | "workers";
-  onChange?: (data: any[]) => void;
+  onChange?: (data: T[]) => void;
 }
 
-export default function DataTable({ data, tableType, onChange }: DataTableProps) {
-  const [localData, setLocalData] = useState<any[]>(data);
+export default function DataTable<T extends DataRow>({
+  data,
+  tableType,
+  onChange,
+}: DataTableProps<T>) {
+  const [localData, setLocalData] = useState<T[]>(data);
 
   const setClientErrors = useDataStore((s) => s.setClientErrors);
   const setTaskErrors = useDataStore((s) => s.setTaskErrors);
@@ -33,24 +39,26 @@ export default function DataTable({ data, tableType, onChange }: DataTableProps)
 
   const headers = Object.keys(localData[0] || {});
 
-  const handleEdit = (rowIdx: number, key: string, value: string) => {
+  const handleEdit = useCallback((rowIdx: number, key: string, value: string) => {
     const updated = [...localData];
-    updated[rowIdx][key] = value;
+    (updated[rowIdx] as Record<string, unknown>)[key] = value;
     setLocalData(updated);
     onChange?.(updated);
 
     let newErrors: ValidationError[] = [];
 
     if (tableType === "clients") {
-      const allTaskIDs = new Set(tasks.map(t => t.TaskID));
+      const allTaskIDs = new Set(tasks.map(t => String(t.TaskID)));
       const seenClientIDs = new Set<string>(); // for one row
-      newErrors = validateClientRow(updated[rowIdx], rowIdx, allTaskIDs, seenClientIDs);
+      if (tableType === "clients") {
+        newErrors = validateClientRow(updated[rowIdx] as unknown as ClientData, rowIdx, allTaskIDs, seenClientIDs);
+      }
     } else if (tableType === "tasks") {
       const seenTaskIDs = new Set<string>(); // optional enhancement
-      newErrors = validateTaskRow(updated[rowIdx], rowIdx, seenTaskIDs);
+      newErrors = validateTaskRow(updated[rowIdx] as unknown as TaskData, rowIdx, seenTaskIDs);
     } else if (tableType === "workers") {
       const seenWorkerIDs = new Set<string>(); // optional enhancement
-      newErrors = validateWorkerRow(updated[rowIdx], rowIdx, seenWorkerIDs);
+      newErrors = validateWorkerRow(updated[rowIdx] as unknown as WorkerData, rowIdx, seenWorkerIDs);
     }
 
     let existingErrors: ValidationError[] = [];
@@ -65,9 +73,9 @@ export default function DataTable({ data, tableType, onChange }: DataTableProps)
     if (tableType === "clients") setClientErrors([...filteredErrors, ...newErrors]);
     if (tableType === "tasks") setTaskErrors([...filteredErrors, ...newErrors]);
     if (tableType === "workers") setWorkErrors([...filteredErrors, ...newErrors]);
-  };
+  }, [localData, onChange, tableType, tasks, clientsErrors, tasksErrors, workersErrors, setClientErrors, setTaskErrors, setWorkErrors]);
 
-  const getCellError = (rowIdx: number, column: string): string | null => {
+  const getCellError = useCallback((rowIdx: number, column: string): string | null => {
     let currentErrors: ValidationError[] = [];
     if (tableType === "clients") currentErrors = clientsErrors;
     if (tableType === "tasks") currentErrors = tasksErrors;
@@ -77,9 +85,9 @@ export default function DataTable({ data, tableType, onChange }: DataTableProps)
       (e) => Number(e.rowIndex) === Number(rowIdx) && e.column === column
     );
     return err?.message || null;
-  };
+  }, [tableType, clientsErrors, tasksErrors, workersErrors]);
 
-  const handleDeleteRow = (rowIdx: number) => {
+  const handleDeleteRow = useCallback((rowIdx: number) => {
     const updated = localData.filter((_, idx) => idx !== rowIdx);
     setLocalData(updated);
     onChange?.(updated); // 🔁 Send updated data back to parent
@@ -95,17 +103,16 @@ export default function DataTable({ data, tableType, onChange }: DataTableProps)
     if (tableType === "clients") setClientErrors(filteredErrors);
     if (tableType === "tasks") setTaskErrors(filteredErrors);
     if (tableType === "workers") setWorkErrors(filteredErrors);
-  };
-  
+  }, [localData, onChange, tableType, clientsErrors, tasksErrors, workersErrors, setClientErrors, setTaskErrors, setWorkErrors]);
 
   useEffect(() => {
     setLocalData(data);
 
     if (tableType === "clients") {
-      const allTaskIDs = new Set(tasks.map(t => t.TaskID));
+      const allTaskIDs = new Set(tasks.map(t => String(t.TaskID)));
       const seenClientIDs = new Set<string>();
       const allErrors = data.flatMap((row, idx) =>
-        validateClientRow(row, idx, allTaskIDs, seenClientIDs)
+        validateClientRow(row as unknown as ClientData, idx, allTaskIDs, seenClientIDs)
       );
       setClientErrors(allErrors);
     }
@@ -113,7 +120,7 @@ export default function DataTable({ data, tableType, onChange }: DataTableProps)
     if (tableType === "tasks") {
       const seenTaskIDs = new Set<string>();
       const allErrors = data.flatMap((row, idx) =>
-        validateTaskRow(row, idx, seenTaskIDs)
+        validateTaskRow(row as unknown as TaskData, idx, seenTaskIDs)
       );
       setTaskErrors(allErrors);
     }
@@ -121,11 +128,11 @@ export default function DataTable({ data, tableType, onChange }: DataTableProps)
     if (tableType === "workers") {
       const seenWorkerIDs = new Set<string>();
       const allErrors = data.flatMap((row, idx) =>
-        validateWorkerRow(row, idx, seenWorkerIDs)
+        validateWorkerRow(row as unknown as WorkerData, idx, seenWorkerIDs)
       );
       setWorkErrors(allErrors);
     }
-  }, [data, tasks]); // ⬅️ tasks dependency here ensures revalidation when tasks load
+  }, [data, tasks, tableType, setClientErrors, setTaskErrors, setWorkErrors]); // ✅ Fixed dependencies
 
   return (
     <Table>
@@ -134,6 +141,7 @@ export default function DataTable({ data, tableType, onChange }: DataTableProps)
           {headers.map((key) => (
             <TableHead key={key}>{key}</TableHead>
           ))}
+          <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -159,13 +167,13 @@ export default function DataTable({ data, tableType, onChange }: DataTableProps)
               );
             })}
             <TableCell>
-        <button
-          className="text-red-600 hover:underline text-sm"
-          onClick={() => handleDeleteRow(rowIdx)}
-        >
-          Delete
-        </button>
-      </TableCell>
+              <button
+                className="text-red-600 hover:underline text-sm"
+                onClick={() => handleDeleteRow(rowIdx)}
+              >
+                Delete
+              </button>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

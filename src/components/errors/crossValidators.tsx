@@ -1,16 +1,22 @@
 // lib/errors/crossValidators.ts
 
-import { ValidationError } from "@/store/useDataStore";
+import { ClientData, TaskData, ValidationError, WorkerData } from "@/store/useDataStore";
 
-export function validateCrossFile(clients: any[], tasks: any[], workers: any[]): ValidationError[] {
+// Define proper types for your data structures
+
+export function validateCrossFile(
+  clients: ClientData[], 
+  tasks: TaskData[], 
+  workers: WorkerData[]
+): ValidationError[] {
   const errors: ValidationError[] = [];
 
   const taskIDs = new Set(tasks.map(t => t.TaskID));
-  const workerSkills = new Set(workers.flatMap(w => (w.Skills || "").split(",").map((s: string) => s.trim())));
+  const workerSkills = new Set(workers.flatMap(w => (w.Skills || "").toString().split(",").map((s: string) => s.trim())));
 
   // 🔗 1. RequestedTaskIDs must exist in tasks
   for (const [i, client] of clients.entries()) {
-    const requested = (client.RequestedTaskIDs || "").split(",").map((id: string) => id.trim());
+    const requested = (client.RequestedTaskIDs || "").toString().split(",").map((id: string) => id.trim());
     for (const id of requested) {
       if (id && !taskIDs.has(id)) {
         errors.push({
@@ -25,7 +31,7 @@ export function validateCrossFile(clients: any[], tasks: any[], workers: any[]):
 
   // 🧠 2. RequiredSkills must exist in worker pool
   for (const [i, task] of tasks.entries()) {
-    const requiredSkills = (task.RequiredSkills || "").split(",").map((s: string) => s.trim());
+    const requiredSkills = (task.RequiredSkills || "").toString().split(",").map((s: string) => s.trim());
     for (const skill of requiredSkills) {
       if (skill && !workerSkills.has(skill)) {
         errors.push({
@@ -41,7 +47,7 @@ export function validateCrossFile(clients: any[], tasks: any[], workers: any[]):
   // 🧠 3. Overloaded workers
   for (const [i, worker] of workers.entries()) {
     try {
-      const slots = JSON.parse(worker.AvailableSlots);
+      const slots = JSON.parse(worker.AvailableSlots.toString());
       const maxLoad = Number(worker.MaxLoadPerPhase);
       if (Array.isArray(slots) && slots.length < maxLoad) {
         errors.push({
@@ -60,10 +66,12 @@ export function validateCrossFile(clients: any[], tasks: any[], workers: any[]):
   const coRunGraph: Record<string, string[]> = {};
   for (const task of tasks) {
     try {
-      const attr = JSON.parse(task.AttributesJSON || "{}");
+      const attr = JSON.parse(task.AttributesJSON?.toString() || "{}");
       const coRunWith = attr.CoRunWith || [];
       coRunGraph[task.TaskID] = coRunWith;
-    } catch {}
+    } catch {
+      // Skip malformed JSON
+    }
   }
 
   const visited = new Set<string>();
@@ -101,13 +109,16 @@ export function validateCrossFile(clients: any[], tasks: any[], workers: any[]):
     const duration = Number(task.Duration);
     let phases: number[] = [];
     try {
-      if (/^\[.*\]$/.test(task.PreferredPhases)) {
-        phases = JSON.parse(task.PreferredPhases);
-      } else if (/^\d+-\d+$/.test(task.PreferredPhases)) {
-        const [start, end] = task.PreferredPhases.split("-").map(Number);
+      const preferredPhases = task.PreferredPhases.toString();
+      if (/^\[.*\]$/.test(preferredPhases)) {
+        phases = JSON.parse(preferredPhases);
+      } else if (/^\d+-\d+$/.test(preferredPhases)) {
+        const [start, end] = preferredPhases.split("-").map(Number);
         phases = Array.from({ length: end - start + 1 }, (_, i) => start + i);
       }
-    } catch {}
+    } catch {
+      // Skip malformed phases
+    }
     for (const p of phases) {
       phaseDemand[p] = (phaseDemand[p] || 0) + duration;
     }
@@ -116,11 +127,13 @@ export function validateCrossFile(clients: any[], tasks: any[], workers: any[]):
   const phaseSupply: Record<number, number> = {};
   for (const worker of workers) {
     try {
-      const slots = JSON.parse(worker.AvailableSlots);
+      const slots = JSON.parse(worker.AvailableSlots.toString());
       for (const p of slots) {
         phaseSupply[p] = (phaseSupply[p] || 0) + 1;
       }
-    } catch {}
+    } catch {
+      // Skip malformed slots
+    }
   }
 
   for (const phase of Object.keys(phaseDemand)) {
@@ -136,8 +149,10 @@ export function validateCrossFile(clients: any[], tasks: any[], workers: any[]):
 
   // 🚦 6. MaxConcurrent ≤ available qualified workers
   for (const [i, task] of tasks.entries()) {
-    const requiredSkills = (task.RequiredSkills || "").split(",").map((s: string) => s.trim());
-    const qualified = workers.filter((w: any) => requiredSkills.every((rs: string) => (w.Skills || "").includes(rs)));
+    const requiredSkills = (task.RequiredSkills || "").toString().split(",").map((s: string) => s.trim());
+    const qualified = workers.filter((w: WorkerData) => 
+      requiredSkills.every((rs: string) => (w.Skills || "").toString().includes(rs))
+    );
     const maxConcurrent = Number(task.MaxConcurrent);
     if (maxConcurrent > qualified.length) {
       errors.push({

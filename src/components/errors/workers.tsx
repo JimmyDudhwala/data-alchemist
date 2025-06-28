@@ -1,11 +1,11 @@
-import { ValidationError } from "@/store/useDataStore";
+import { ValidationError, WorkerData } from "@/store/useDataStore";
 
 
-export function validateWorkerRow(row: any, rowIdx: number, seenWorkerIDs: Set<string>): ValidationError[] {
+export function validateWorkerRow(row: WorkerData, rowIdx: number, seenWorkerIDs: Set<string>): ValidationError[] {
   const errors: ValidationError[] = [];
 
   // a. Parse AvailableSlots
-  let slots: any[] = [];
+  let slots: string[] = [];
   try {
     slots = JSON.parse(row.AvailableSlots);
     if (!Array.isArray(slots)) throw new Error();

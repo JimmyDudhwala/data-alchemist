@@ -2,7 +2,7 @@ import { saveAs } from "file-saver";
 import { Parser } from "json2csv";
 
 interface ExportButtonProps {
-  data: any[];
+  data: Record<string, unknown>[];
   filename: string;
 }
 

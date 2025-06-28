@@ -1,13 +1,13 @@
 // components/RuleList.tsx
 "use client";
 
-import { useRuleStore } from "@/store/useRuleStore";
+import { Rule, useRuleStore } from "@/store/useRuleStore";
 
 export function RuleList() {
   const rules = useRuleStore((s) => s.rules);
   const removeRule = useRuleStore((s) => s.removeRule);
 
-  const renderSummary = (rule: any) => {
+  const renderSummary = (rule: Rule) => {
     switch (rule.type) {
       case "coRun":
         return `Co-run → [${rule.tasks.join(", ")}]`;

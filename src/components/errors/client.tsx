@@ -1,9 +1,9 @@
 // lib/errors/clients.ts
 
-import { ValidationError } from "@/store/useDataStore";
+import { ClientData, ValidationError } from "@/store/useDataStore";
 
 
-export function validateClientRow(row: any, rowIdx: number, allTaskIDs: Set<string>, seenClientIDs: Set<string>): ValidationError[] {
+export function validateClientRow(row: ClientData, rowIdx: number, allTaskIDs: Set<string>, seenClientIDs: Set<string>): ValidationError[] {
   const errors: ValidationError[] = [];
 
   // a. PriorityLevel (1–5)
@@ -20,12 +20,12 @@ export function validateClientRow(row: any, rowIdx: number, allTaskIDs: Set<stri
   }
 
   // c. RequestedTaskIDs must exist in tasks
-  // const requested = (row.RequestedTaskIDs || "").split(",").map((id: string) => id.trim());
-  // for (const taskID of requested) {
-  //   if (taskID && !allTaskIDs.has(taskID)) {
-  //     errors.push({ file: "clients", rowIndex: rowIdx, column: "RequestedTaskIDs", message: `Unknown TaskID: ${taskID}` });
-  //   }
-  // }
+  const requested = (row.RequestedTaskIDs || "").split(",").map((id: string) => id.trim());
+  for (const taskID of requested) {
+    if (taskID && !allTaskIDs.has(taskID)) {
+      errors.push({ file: "clients", rowIndex: rowIdx, column: "RequestedTaskIDs", message: `Unknown TaskID: ${taskID}` });
+    }
+  }
 
   // d. Duplicate ClientID
   const id = row.ClientID;

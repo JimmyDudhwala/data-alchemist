@@ -59,8 +59,8 @@ export default function SlotRestrictionForm() {
       <Select
         isMulti
         options={options}
-        value={options.filter((o) => selected.includes(o.value))}
-        onChange={(vals) => setSelected(vals.map((v) => v.value))}
+        value={options.filter((o) => selected.includes(String(o.value)))}
+        onChange={(vals) => setSelected(vals.map((v) => String(v.value)))}
         className="mb-2"
       />
 
