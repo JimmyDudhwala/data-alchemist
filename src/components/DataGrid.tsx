@@ -135,6 +135,8 @@ export default function DataTable<T extends DataRow>({
   }, [data, tasks, tableType, setClientErrors, setTaskErrors, setWorkErrors]); // ✅ Fixed dependencies
 
   return (
+    <>
+  
     <Table>
       <TableHeader>
         <TableRow>
@@ -177,6 +179,25 @@ export default function DataTable<T extends DataRow>({
           </TableRow>
         ))}
       </TableBody>
-    </Table>
+      </Table>
+
+<div className="mt-2">
+  <button
+    onClick={() => {
+      const newRow = Object.fromEntries(
+        headers.map((h) => [h, ""])
+      ) as T;
+      const updated = [...localData, newRow];
+      setLocalData(updated);
+      onChange?.(updated);
+    }}
+    className="text-blue-600 hover:underline text-sm"
+  >
+    ➕ Add Data
+  </button>
+</div>
+
+</>
   );
 }
+

@@ -7,6 +7,7 @@ import FileUploader from "@/components/FileUploader";
 import LLMSearchBar from "@/components/LLMSearchBar";
 import { ClientData, TaskData, useDataStore, WorkerData } from "@/store/useDataStore";
 import { validateCrossFile } from "@/components/errors/crossValidators";
+import NLModifyForm from "@/components/NLModifyForm";
 
 // Define proper types for your data
 
@@ -53,6 +54,7 @@ export default function Home() {
             tableType="clients"
             onFiltered={setFilteredClients}
           />
+          <NLModifyForm tableType="clients" data={clients} />
           <button
             onClick={() => setFilteredClients(clients)}
             className="bg-green-200 text-black px-4 py-2 rounded hover:bg-green-700 mt-4"
@@ -76,6 +78,7 @@ export default function Home() {
             tableType="tasks"
             onFiltered={setFilteredTasks}
           />
+           <NLModifyForm tableType="tasks" data={tasks} />
           <button
             onClick={() => setFilteredTasks(tasks)}
             className="bg-green-200 text-black px-4 py-2 rounded hover:bg-green-700 mt-4"
@@ -99,6 +102,7 @@ export default function Home() {
             tableType="workers"
             onFiltered={setFilteredWorkers}
           />
+           <NLModifyForm tableType="workers" data={workers} />
           <button
             onClick={() => setFilteredWorkers(workers)}
             className="bg-green-200 text-black px-4 py-2 rounded hover:bg-green-700 mt-4"
