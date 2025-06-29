@@ -1,5 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 import { Database, Users, ClipboardList, UserCheck, AlertTriangle } from "lucide-react"
+import Link from "next/link"
+import { Button } from "./ui/button"
 
 interface NavbarProps {
   stats: {
@@ -15,12 +17,14 @@ export default function Navbar({ stats }: NavbarProps) {
     <nav className="bg-black/50 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-50">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <Database className="w-8 h-8 text-blue-400" />
             <span className="text-xl font-bold text-white">DataHub</span>
-          </div>
+          </Link >
 
           <div className="flex items-center space-x-6">
+          <Button className="bg-transparent border-white border-2"><Link href="/rules">generate rules</Link></Button>
+          <Button className="bg-transparent border-white border-2"><Link href="/priority">set priority</Link></Button>
             <div className="flex items-center space-x-1">
               <Users className="w-4 h-4 text-blue-400" />
               <span className="text-gray-300 text-sm">Clients:</span>
@@ -52,6 +56,9 @@ export default function Navbar({ stats }: NavbarProps) {
                 <Badge variant="destructive">{stats.errors}</Badge>
               </div>
             )}
+
+          
+       
           </div>
         </div>
       </div>
